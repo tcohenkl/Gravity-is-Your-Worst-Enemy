@@ -17,7 +17,6 @@ int main(){
         }
 
        // player movement 
-
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)){
             player.move(0.0f, -0.1f);
         }
