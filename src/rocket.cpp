@@ -72,3 +72,8 @@ sf::Vector2f Rocket::normalize(const sf::Vector2f& vec) {
     float mag = magnitude(vec);
     return sf::Vector2f(vec.x / mag, vec.y / mag);
 }
+
+sf::Vector2f Rocket::getPosition() const {
+    return sprite.getPosition();
+}
+

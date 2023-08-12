@@ -9,6 +9,7 @@ public:
     void update();
     void draw(sf::RenderWindow &window);
     void setPosition(const sf::Vector2f &pos);
+    sf::Vector2f getPosition() const;
 
 private:
     sf::Texture texture;          // rocket texture w/o thurst
