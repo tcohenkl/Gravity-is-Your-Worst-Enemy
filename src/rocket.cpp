@@ -5,13 +5,13 @@
 Rocket::Rocket() : 
 rotationSpeed(0.05f), 
 acceleration(0.00001f), 
-maxVelocity(0.25f),
+maxVelocity(0.20f),
 isThrusting(false) {
 
     if (texture.loadFromFile("assets/sprites/rocket.png")) {
         sprite.setTexture(texture);
         sprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);
-        sprite.setScale(0.2f, 0.2f);
+        sprite.setScale(0.15f, 0.15f);
     } else {
         std::cerr << "failed to load rocket texture." << std::endl;
     }
@@ -76,4 +76,9 @@ sf::Vector2f Rocket::normalize(const sf::Vector2f& vec) {
 sf::Vector2f Rocket::getPosition() const {
     return sprite.getPosition();
 }
+
+sf::Vector2f Rocket::getVelocity() const {
+    return velocity;
+}
+
 
