@@ -3,6 +3,43 @@
 #include <iostream>
 #include "Collision.h"
 
+
+CollisionDetail Rocket::checkCollision(const sf::Sprite& planetSprite) {
+    CollisionDetail detail = {false, false, {0, 0}};
+    const float SPEED_THRESHOLD = 0.025f; 
+    
+    if (Collision::pixelPerfectTest(this->sprite, planetSprite)) {
+        detail.hasCollided = true;
+
+        // Calculate the approximate collision point as the closest point on the rocket to the planet's center.
+        // This might not be the perfect approach, but should work in most scenarios.
+        sf::Vector2f direction = planetSprite.getPosition() - this->getPosition();
+        detail.collisionPoint = this->getPosition() + normalize(direction) * static_cast<float>(this->texture.getSize().x) / 2.0f;
+        
+        // Check collision speed
+        float speed = magnitude(velocity);
+        if (speed > SPEED_THRESHOLD) {  // define SPEED_THRESHOLD as per your game's requirement, e.g., 0.15f
+            detail.isFatalCollision = true;
+            return detail;
+        }
+
+        // Check if nose collided (by comparing collision point with sprite's rotation)
+        float radianAngle = (sprite.getRotation() - 90.0f) * (3.14159f / 180.f);
+        sf::Vector2f noseDirection(cos(radianAngle), sin(radianAngle));
+        float dotProduct = direction.x * noseDirection.x + direction.y * noseDirection.y;
+
+        if (dotProduct > 0) {
+            // The nose is facing the planet at the collision point
+            detail.isFatalCollision = true;
+            return detail;
+        }
+    }
+
+        return detail;
+}
+
+
+
 Rocket::Rocket() : 
 rotationSpeed(0.05f), 
 acceleration(0.00001f), 
@@ -56,6 +93,7 @@ void Rocket::update() {
     sprite.move(velocity);
 }
 
+
 void Rocket::draw(sf::RenderWindow &window) {
     window.draw(sprite);
 }
@@ -86,9 +124,12 @@ sf::Vector2f Rocket::getVelocity() const {
     return velocity;
 }
 
-bool Rocket::isCollidingWith(const sf::Sprite& other) {
-    return Collision::pixelPerfectTest(this->sprite, other);
+void Rocket::applyForce(const sf::Vector2f& force) {
+    velocity += force;
 }
+
+
+
 
 
 

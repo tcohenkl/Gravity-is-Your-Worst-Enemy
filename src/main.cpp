@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstdlib>
 #include <cmath>
+#include <iostream>
 
 /// STARS //////////////////////////////////////////////////
 
@@ -57,7 +58,24 @@ int main() {
         }
 
         rocket.handleInput();
+
+        if (planet.isWithinGravityField(rocket.getPosition())) {
+            sf::Vector2f gravityForce = planet.computeGravityForce(rocket.getPosition());
+            rocket.applyForce(gravityForce);
+        }
+
         rocket.update();
+
+        // Handle collisions
+        CollisionDetail collisionDetail = rocket.checkCollision(planet.getCollisionSprite());
+        if (collisionDetail.hasCollided) {
+            if (collisionDetail.isFatalCollision) {
+                std::cout << "CRASH!" << std::endl; 
+                rocket.setVelocity({0,0});
+            } else {
+                rocket.setVelocity({0,0}); 
+            }
+        }
 
 
         // update stars based on rocket velocity
@@ -72,9 +90,6 @@ int main() {
             }
         }
 
-        if (rocket.isCollidingWith(planet.getSprite())) {
-            rocket.setVelocity({0,0}); 
-        }
 
         //updates camera to follow rocket
         camera.setCenter(rocket.getPosition());

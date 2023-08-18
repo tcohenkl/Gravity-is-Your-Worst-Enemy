@@ -1,6 +1,12 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
+struct CollisionDetail {
+    bool hasCollided;
+    bool isFatalCollision;
+    sf::Vector2f collisionPoint;
+};
+
 class Rocket {
 public:
     Rocket();
@@ -10,12 +16,13 @@ public:
     void draw(sf::RenderWindow &window);
     void setPosition(const sf::Vector2f &pos);
     void setVelocity(const sf::Vector2f &velocity);
-    bool isCollidingWith(const sf::Sprite &other);
+    void applyForce(const sf::Vector2f& force);
+    CollisionDetail checkCollision(const sf::Sprite& planetSprite);
     sf::Vector2f getPosition() const;
     sf::Vector2f getVelocity() const;
 
 private:
-    sf::Texture texture;          // rocket texture w/o thurst
+    sf::Texture texture;          // rocket texture w/o thrust
     sf::Texture thrustTexture;    // rocket texture w thrust
     sf::Sprite sprite;
 
