@@ -1,6 +1,7 @@
 #include "rocket.hpp"
 #include <cmath>
 #include <iostream>
+#include "Collision.h"
 
 Rocket::Rocket() : 
 rotationSpeed(0.05f), 
@@ -11,7 +12,7 @@ isThrusting(false) {
     if (texture.loadFromFile("assets/sprites/rocket.png")) {
         sprite.setTexture(texture);
         sprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);
-        sprite.setScale(0.15f, 0.15f);
+        sprite.setScale(0.12f, 0.12f);
     } else {
         std::cerr << "failed to load rocket texture." << std::endl;
     }
@@ -63,6 +64,10 @@ void Rocket::setPosition(const sf::Vector2f &pos) {
     sprite.setPosition(pos);
 }
 
+void Rocket::setVelocity(const sf::Vector2f &vel) {
+    velocity = vel; 
+}
+
 // never thought i'd use it 
 float Rocket::magnitude(const sf::Vector2f& vec) {
     return std::sqrt(vec.x * vec.x + vec.y * vec.y);
@@ -80,5 +85,11 @@ sf::Vector2f Rocket::getPosition() const {
 sf::Vector2f Rocket::getVelocity() const {
     return velocity;
 }
+
+bool Rocket::isCollidingWith(const sf::Sprite& other) {
+    return Collision::pixelPerfectTest(this->sprite, other);
+}
+
+
 
 

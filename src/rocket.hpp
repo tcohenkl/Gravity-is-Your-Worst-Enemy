@@ -9,6 +9,8 @@ public:
     void update();
     void draw(sf::RenderWindow &window);
     void setPosition(const sf::Vector2f &pos);
+    void setVelocity(const sf::Vector2f &velocity);
+    bool isCollidingWith(const sf::Sprite &other);
     sf::Vector2f getPosition() const;
     sf::Vector2f getVelocity() const;
 

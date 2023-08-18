@@ -1,4 +1,5 @@
 #include "rocket.hpp"
+#include "planet.hpp"
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <cstdlib>
@@ -6,7 +7,7 @@
 
 /// STARS //////////////////////////////////////////////////
 
-const int NUM_STARS = 150;  // num of stars that appear on screen
+const int NUM_STARS = 175;  // num of stars that appear on screen
 const float STAR_MAX_SIZE = 3.0f; // 3 pixel max size
 const int NUM_COLORS = 4;  // number of  star colors
 sf::Color STAR_COLORS[NUM_COLORS] = {sf::Color(255, 204, 111), sf::Color(155, 176, 255), 
@@ -18,7 +19,7 @@ struct Star {
     sf::Color color;
 };
 
-// generates the stars on the screen 
+// generates the stars on the screen next to rocket
 Star generateStarForScreen(const sf::Vector2f& rocketPosition) {
     float offset = 512.0f;  // screen width/height
     Star star;
@@ -36,6 +37,8 @@ int main() {
 
     Rocket rocket;
     rocket.setPosition({256, 256});
+    Planet planet; 
+    planet.setPosition({400,400});
 
     sf::View camera(sf::FloatRect(0, 0, 512, 512));
     std::vector<Star> stars;
@@ -56,6 +59,7 @@ int main() {
         rocket.handleInput();
         rocket.update();
 
+
         // update stars based on rocket velocity
         for (int i = 0; i < NUM_STARS; ++i) {
             stars[i].position -= rocket.getVelocity();
@@ -68,7 +72,11 @@ int main() {
             }
         }
 
-        // updates camera to follow rocket
+        if (rocket.isCollidingWith(planet.getSprite())) {
+            rocket.setVelocity({0,0}); 
+        }
+
+        //updates camera to follow rocket
         camera.setCenter(rocket.getPosition());
         window.setView(camera);
 
@@ -81,10 +89,9 @@ int main() {
             starShape.setFillColor(stars[i].color);  // Set the star's color
             window.draw(starShape);
         }
-
+        
         rocket.draw(window);
+        planet.draw(window);
         window.display();
     }
-
-    return 0;
 }
