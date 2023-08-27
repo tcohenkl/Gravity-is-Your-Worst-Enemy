@@ -87,4 +87,20 @@ namespace Collision
         }
         return false;
     }
+
+
+    bool singlePixelTest(const sf::Sprite& sprite, sf::Vector2f& mousePosition, sf::Uint8 alphaLimit) {
+		if (!sprite.getGlobalBounds().contains(mousePosition.x, mousePosition.y))
+            return false;
+    
+		auto subRect = sprite.getTextureRect();
+		auto& mask = bitmasks().get(*sprite.getTexture());
+
+		auto sv = sprite.getInverseTransform().transformPoint(mousePosition.x, mousePosition.y);
+		// Make sure pixels fall within the sprite's subrect
+		if (sv.x > 0 && sv.y > 0 && sv.x < subRect.width && sv.y < subRect.height) {
+			return getPixel(mask, *sprite.getTexture(), static_cast<int>(sv.x) + subRect.left, static_cast<int>(sv.y) + subRect.top) > alphaLimit;
+		}
+		return false;
+	}
 }

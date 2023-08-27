@@ -6,37 +6,46 @@
 
 CollisionDetail Rocket::checkCollision(const sf::Sprite& planetSprite) {
     CollisionDetail detail = {false, false, {0, 0}};
-    const float SPEED_THRESHOLD = 0.025f; 
+    const float SPEED_THRESHOLD = 0.04f; 
     
     if (Collision::pixelPerfectTest(this->sprite, planetSprite)) {
         detail.hasCollided = true;
 
         // Calculate the approximate collision point as the closest point on the rocket to the planet's center.
-        // This might not be the perfect approach, but should work in most scenarios.
         sf::Vector2f direction = planetSprite.getPosition() - this->getPosition();
         detail.collisionPoint = this->getPosition() + normalize(direction) * static_cast<float>(this->texture.getSize().x) / 2.0f;
         
         // Check collision speed
         float speed = magnitude(velocity);
-        if (speed > SPEED_THRESHOLD) {  // define SPEED_THRESHOLD as per your game's requirement, e.g., 0.15f
+        if (speed > SPEED_THRESHOLD) {
             detail.isFatalCollision = true;
             return detail;
         }
 
         // Check if nose collided (by comparing collision point with sprite's rotation)
-        float radianAngle = (sprite.getRotation() - 90.0f) * (3.14159f / 180.f);
+        float radianAngle = (sprite.getRotation() - 90.0f) * (M_PI / 180.f);
         sf::Vector2f noseDirection(cos(radianAngle), sin(radianAngle));
         float dotProduct = direction.x * noseDirection.x + direction.y * noseDirection.y;
 
-        if (dotProduct > 0) {
-            // The nose is facing the planet at the collision point
+        float noseMagnitude = std::sqrt(noseDirection.x * noseDirection.x + noseDirection.y * noseDirection.y);
+        float directionMagnitude = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+
+        // Compute the angle between nose direction and collision direction
+        float angleBetween = acos(dotProduct / (noseMagnitude * directionMagnitude)) * (180.0f / M_PI);
+
+        // Threshold can be adjusted based on how strict you want the check to be
+        float thresholdAngle = 165.0f;  // this means if the angle is less than 170 degrees, it's a fatal collision
+        if (angleBetween < thresholdAngle) {
             detail.isFatalCollision = true;
+            std::cout << "Crash due to improper landing." << std::endl;
             return detail;
         }
-    }
 
+    }
         return detail;
 }
+
+
 
 
 
@@ -44,7 +53,9 @@ Rocket::Rocket() :
 rotationSpeed(0.05f), 
 acceleration(0.00001f), 
 maxVelocity(0.20f),
-isThrusting(false) {
+isThrusting(false),
+bounceThreshold(0.01) // minimum velocity magnitude before we consider the rocket settled
+{
 
     if (texture.loadFromFile("assets/sprites/rocket.png")) {
         sprite.setTexture(texture);
@@ -124,9 +135,32 @@ sf::Vector2f Rocket::getVelocity() const {
     return velocity;
 }
 
+sf::Vector2f Rocket::getForwardDirection() const {
+    float radianAngle = (sprite.getRotation() - 90.0f) * (3.14159f / 180.f);
+    return sf::Vector2f(cos(radianAngle), sin(radianAngle));
+}
+
+sf::Vector2f Rocket::getBounceForce(const sf::Vector2f& velocity) {  // Note the scope resolution
+    float bounceFactor = 0.2f;
+    return -velocity * bounceFactor;
+}
+
 void Rocket::applyForce(const sf::Vector2f& force) {
     velocity += force;
 }
+
+
+bool Rocket::isSettling(const sf::Vector2f& velocity) {
+    return magnitude(velocity) < bounceThreshold;
+}
+
+
+
+
+ 
+
+
+
 
 
 

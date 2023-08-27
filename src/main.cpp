@@ -8,7 +8,7 @@
 
 /// STARS //////////////////////////////////////////////////
 
-const int NUM_STARS = 175;  // num of stars that appear on screen
+const int NUM_STARS = 200;  // num of stars that appear on screen
 const float STAR_MAX_SIZE = 3.0f; // 3 pixel max size
 const int NUM_COLORS = 4;  // number of  star colors
 sf::Color STAR_COLORS[NUM_COLORS] = {sf::Color(255, 204, 111), sf::Color(155, 176, 255), 
@@ -70,13 +70,12 @@ int main() {
         CollisionDetail collisionDetail = rocket.checkCollision(planet.getCollisionSprite());
         if (collisionDetail.hasCollided) {
             if (collisionDetail.isFatalCollision) {
-                std::cout << "CRASH!" << std::endl; 
+                std::cout << "CRASH!" << std::endl;
                 rocket.setVelocity({0,0});
             } else {
-                rocket.setVelocity({0,0}); 
+                rocket.setVelocity({0,0});
             }
         }
-
 
         // update stars based on rocket velocity
         for (int i = 0; i < NUM_STARS; ++i) {
@@ -90,11 +89,9 @@ int main() {
             }
         }
 
-
         //updates camera to follow rocket
         camera.setCenter(rocket.getPosition());
         window.setView(camera);
-
         window.clear();
 
         // Drawing stars

@@ -49,5 +49,19 @@ namespace Collision {
 	/// You can avoid this by using the "createTextureAndBitmask" function
 	//////
 	bool pixelPerfectTest(const sf::Sprite& sprite1, const sf::Sprite& sprite2, sf::Uint8 alphaLimit = 0);
+	
+	
+
+	///////
+	/// Test if a single pixel collides By testing the alpha value at the given location.
+	/// Supports scaling and rotation
+	/// alphaLimit: The threshold at which a pixel becomes "solid". If alphaLimit is 127, a pixel with
+	/// alpha value 128 will cause a collision and a pixel with alpha value 126 will not.
+	/// 
+	/// This functions creates bitmasks of the textures of the sprite by
+	/// downloading the textures from the graphics card to memory -> SLOW!
+	/// You can avoid this by using the "createTextureAndBitmask" function
+	//////
+	bool singlePixelTest(const sf::Sprite& sprite, sf::Vector2f& mousePosition, sf::Uint8 alphaLimit);
 
 }

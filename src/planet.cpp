@@ -49,7 +49,7 @@ sf::Vector2f Planet::computeGravityForce(const sf::Vector2f& position) const {
     
     // Simple gravitational pull towards the center of the planet
     // You can adjust the gravitational constant as per your needs
-    float gravitationalConstant = 0.000007f;
+    float gravitationalConstant = 0.000006f;
     sf::Vector2f direction = sprite.getPosition() - position;
     float magnitude = std::sqrt(direction.x * direction.x + direction.y * direction.y);
     direction /= magnitude; // Normalize direction
