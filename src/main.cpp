@@ -1,5 +1,6 @@
 #include "rocket.hpp"
 #include "planet.hpp"
+#include "gameover.hpp"
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <cstdlib>
@@ -33,18 +34,25 @@ Star generateStarForScreen(const sf::Vector2f& rocketPosition) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
+enum GameState {
+    PlayingState,   
+    GameOverState
+};
+
+
 int main() {
     sf::RenderWindow window(sf::VideoMode(512, 512), "Rocket Game", sf::Style::Titlebar | sf::Style::Close);
 
     Rocket rocket;
     rocket.setPosition({256, 256});
-    Planet planet; 
+    Planet planet;
     planet.setPosition({400,400});
+    GameOver gameOverScreen;
 
     sf::View camera(sf::FloatRect(0, 0, 512, 512));
     std::vector<Star> stars;
+    GameState currentState = PlayingState;
 
-    // Initialize stars covering the rocket's screen
     for (int i = 0; i < NUM_STARS; ++i) {
         stars.push_back(generateStarForScreen(rocket.getPosition()));
     }
@@ -55,55 +63,67 @@ int main() {
         while (window.pollEvent(evnt)) {
             if (evnt.type == sf::Event::Closed)
                 window.close();
-        }
-
-        rocket.handleInput();
-
-        if (planet.isWithinGravityField(rocket.getPosition())) {
-            sf::Vector2f gravityForce = planet.computeGravityForce(rocket.getPosition());
-            rocket.applyForce(gravityForce);
-        }
-
-        rocket.update();
-
-        // Handle collisions
-        CollisionDetail collisionDetail = rocket.checkCollision(planet.getCollisionSprite());
-        if (collisionDetail.hasCollided) {
-            if (collisionDetail.isFatalCollision) {
-                std::cout << "CRASH!" << std::endl;
-                rocket.setVelocity({0,0});
-            } else {
+            
+            if (currentState == GameOverState && evnt.type == sf::Event::KeyPressed && evnt.key.code == sf::Keyboard::R) {
+                // Reset game
+                currentState = PlayingState;
+                rocket.setPosition({256, 256});
                 rocket.setVelocity({0,0});
             }
         }
 
-        // update stars based on rocket velocity
-        for (int i = 0; i < NUM_STARS; ++i) {
-            stars[i].position -= rocket.getVelocity();
+        if (currentState == PlayingState) {
+            rocket.handleInput();
 
-            // if star too far, replace with a new star
-            sf::Vector2f diff = stars[i].position - rocket.getPosition();
-            float distance = std::sqrt(diff.x * diff.x + diff.y * diff.y);
-            if (distance > 400) { // you can adjust this 
-                stars[i] = generateStarForScreen(rocket.getPosition());
+            if (planet.isWithinGravityField(rocket.getPosition())) {
+                sf::Vector2f gravityForce = planet.computeGravityForce(rocket.getPosition());
+                rocket.applyForce(gravityForce);
             }
-        }
 
-        //updates camera to follow rocket
-        camera.setCenter(rocket.getPosition());
-        window.setView(camera);
-        window.clear();
+            rocket.update();
 
-        // Drawing stars
-        for (int i = 0; i < NUM_STARS; ++i) {
-            sf::CircleShape starShape(stars[i].size);
-            starShape.setPosition(stars[i].position);
-            starShape.setFillColor(stars[i].color);  // Set the star's color
-            window.draw(starShape);
-        }
+            CollisionDetail collisionDetail = rocket.checkCollision(planet.getCollisionSprite());
+            if (collisionDetail.hasCollided) {
+                if (collisionDetail.isFatalCollision) {
+                    std::cout << "CRASH!" << std::endl;
+                    rocket.setVelocity({0,0});
+                    currentState = GameOverState;
+                } else {
+                    rocket.setVelocity({0,0});
+                }
+            }
+
+            for (int i = 0; i < NUM_STARS; ++i) {
+                stars[i].position -= rocket.getVelocity();
+
+                sf::Vector2f diff = stars[i].position - rocket.getPosition();
+                float distance = std::sqrt(diff.x * diff.x + diff.y * diff.y);
+                if (distance > 400) {
+                    stars[i] = generateStarForScreen(rocket.getPosition());
+                }
+            }
+
+            camera.setCenter(rocket.getPosition());
+            window.setView(camera);
+            window.clear();
+
+            for (int i = 0; i < NUM_STARS; ++i) {
+                sf::CircleShape starShape(stars[i].size);
+                starShape.setPosition(stars[i].position);
+                starShape.setFillColor(stars[i].color);
+                window.draw(starShape);
+            }
+            
+            rocket.draw(window);
+            planet.draw(window);
         
-        rocket.draw(window);
-        planet.draw(window);
+        } else if (currentState == GameOverState) {
+            camera.setCenter(256, 256);  // center the camera on the middle of the window
+            window.setView(camera);
+            window.clear();
+            gameOverScreen.draw(window);
+        }
+
         window.display();
     }
 }
