@@ -87,6 +87,7 @@ int main() {
                 if (collisionDetail.isFatalCollision) {
                     std::cout << "CRASH!" << std::endl;
                     rocket.setVelocity({0,0});
+                    gameOverScreen.resetAlpha(); 
                     currentState = GameOverState;
                 } else {
                     rocket.setVelocity({0,0});
@@ -121,6 +122,8 @@ int main() {
             camera.setCenter(256, 256);  // center the camera on the middle of the window
             window.setView(camera);
             window.clear();
+
+            gameOverScreen.fadeIn(); 
             gameOverScreen.draw(window);
         }
 
