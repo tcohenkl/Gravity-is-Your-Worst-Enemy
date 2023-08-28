@@ -21,8 +21,12 @@ public:
     sf::Vector2f getPosition() const;
     sf::Vector2f getVelocity() const;
     sf::Vector2f getForwardDirection() const;
-    sf::Vector2f getBounceForce(const sf::Vector2f& velocity); 
-    bool isSettling(const sf::Vector2f& velocity);
+    void setRotation(float angle);
+    void enableRotation();
+    void disableRotation();
+    void land();
+    void takeOff();
+    bool isLanded() const;
 
 private:
     sf::Texture texture;          // rocket texture w/o thrust
@@ -34,9 +38,11 @@ private:
     const float acceleration;
     const float maxVelocity;
     bool isThrusting;
-    const float bounceThreshold; 
     sf::Vector2f velocity;
 
     float magnitude(const sf::Vector2f& vec);
     sf::Vector2f normalize(const sf::Vector2f& vec);
+
+    bool canRotate;
+    bool landed; 
 };

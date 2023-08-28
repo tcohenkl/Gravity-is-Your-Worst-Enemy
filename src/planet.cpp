@@ -2,7 +2,9 @@
 #include <iostream>
 #include <cmath>
 
-Planet::Planet() {
+Planet::Planet():
+rotationSpeed(0.002) 
+{
     if (!texture.loadFromFile("assets/sprites/planet.png")) {
         std::cerr << "Failed to load planet texture." << std::endl;
     } else {
@@ -25,6 +27,12 @@ void Planet::setPosition(const sf::Vector2f& position) {
     sprite.setPosition(position);
     collisionSprite.setPosition(position);
     gravityField.setPosition(position); // Set gravity field's position
+}
+
+void Planet::update() {
+    sprite.rotate(rotationSpeed);
+    collisionSprite.rotate(rotationSpeed);
+    gravityField.rotate(rotationSpeed);
 }
 
 void Planet::draw(sf::RenderWindow& window) const {
@@ -56,5 +64,17 @@ sf::Vector2f Planet::computeGravityForce(const sf::Vector2f& position) const {
 
     return direction * gravitationalConstant;
 }
+
+sf::Vector2f Planet::getPosition() const {
+    return sprite.getPosition();
+}
+
+float Planet::getRotationSpeed() const {
+    return rotationSpeed;
+}
+
+
+
+
 
 

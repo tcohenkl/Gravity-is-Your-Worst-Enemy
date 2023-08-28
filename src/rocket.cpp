@@ -34,7 +34,7 @@ CollisionDetail Rocket::checkCollision(const sf::Sprite& planetSprite) {
         float angleBetween = acos(dotProduct / (noseMagnitude * directionMagnitude)) * (180.0f / M_PI);
 
         // Threshold can be adjusted based on how strict you want the check to be
-        float thresholdAngle = 165.0f;  // this means if the angle is less than 170 degrees, it's a fatal collision
+        float thresholdAngle = 170.0f;  // this means if the angle is less than 170 degrees, it's a fatal collision
         if (angleBetween < thresholdAngle) {
             detail.isFatalCollision = true;
             std::cout << "Crash due to improper landing." << std::endl;
@@ -46,15 +46,13 @@ CollisionDetail Rocket::checkCollision(const sf::Sprite& planetSprite) {
 }
 
 
-
-
-
 Rocket::Rocket() : 
 rotationSpeed(0.05f), 
 acceleration(0.00001f), 
 maxVelocity(0.20f),
 isThrusting(false),
-bounceThreshold(0.01) // minimum velocity magnitude before we consider the rocket settled
+canRotate(true), 
+landed(false) // minimum velocity magnitude before we consider the rocket settled
 {
 
     if (texture.loadFromFile("assets/sprites/rocket.png")) {
@@ -91,12 +89,14 @@ void Rocket::handleInput() {
         isThrusting = false;
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
-        sprite.rotate(-rotationSpeed);
-    }
+    if(canRotate) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)) {
+            sprite.rotate(-rotationSpeed);
+        }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
-        sprite.rotate(rotationSpeed);
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)) {
+            sprite.rotate(rotationSpeed);
+        }
     }
 }
 
@@ -140,19 +140,35 @@ sf::Vector2f Rocket::getForwardDirection() const {
     return sf::Vector2f(cos(radianAngle), sin(radianAngle));
 }
 
-sf::Vector2f Rocket::getBounceForce(const sf::Vector2f& velocity) {  // Note the scope resolution
-    float bounceFactor = 0.2f;
-    return -velocity * bounceFactor;
-}
-
 void Rocket::applyForce(const sf::Vector2f& force) {
     velocity += force;
 }
 
-
-bool Rocket::isSettling(const sf::Vector2f& velocity) {
-    return magnitude(velocity) < bounceThreshold;
+void Rocket::setRotation(float angle) {
+    sprite.setRotation(angle);
 }
+
+void Rocket::enableRotation() { canRotate = true; }
+void Rocket::disableRotation() { canRotate = false; }
+
+void Rocket::land() {
+    landed = true;
+    disableRotation();
+    setVelocity({0,0});
+}
+
+void Rocket::takeOff() {
+    landed = false;
+    enableRotation();
+}
+
+bool Rocket::isLanded() const {
+    return landed;
+}
+
+
+
+
 
 
 
