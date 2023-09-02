@@ -34,7 +34,7 @@ CollisionDetail Rocket::checkCollision(const sf::Sprite& planetSprite) {
         float angleBetween = acos(dotProduct / (noseMagnitude * directionMagnitude)) * (180.0f / M_PI);
 
         // Threshold can be adjusted based on how strict you want the check to be
-        float thresholdAngle = 170.0f;  // this means if the angle is less than 170 degrees, it's a fatal collision
+        float thresholdAngle = 165.0f;  // this means if the angle is less than 165 degrees, it's a fatal collision (15 deg)
         if (angleBetween < thresholdAngle) {
             detail.isFatalCollision = true;
             std::cout << "Crash due to improper landing." << std::endl;
