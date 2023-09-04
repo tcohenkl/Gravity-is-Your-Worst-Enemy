@@ -1,5 +1,6 @@
 #include "gameover.hpp"
 #include <iostream> 
+#include <iomanip>  // for std::setprecision
 
 GameOver::GameOver() :
     fadeAlpha(0.0)
@@ -13,16 +14,32 @@ GameOver::GameOver() :
     gameOverText.setCharacterSize(48);
     gameOverText.setFillColor(sf::Color::White);
     gameOverText.setPosition(90, 200); 
+    
     restartText.setFont(font);
     restartText.setString("Press 'R' to Restart");
     restartText.setCharacterSize(24);
     restartText.setFillColor(sf::Color::White);
     restartText.setPosition(128, 300);
+
+    survivalText.setFont(font);
+    survivalText.setCharacterSize(18);
+    survivalText.setFillColor(sf::Color::White);
+    survivalText.setPosition(115, 140); 
 }
+
+void GameOver::setSurvivalTime(float seconds) {
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(2); // This sets the decimal precision to 2 places.
+    ss << "You survived: " << seconds << " seconds";
+    survivalText.setString(ss.str());
+}
+
+
 
 void GameOver::draw(sf::RenderWindow& window) {
     window.draw(gameOverText);
     window.draw(restartText);
+    window.draw(survivalText); 
 }
 
 void GameOver::setAlpha(sf::Uint8 alpha) {
@@ -33,6 +50,10 @@ void GameOver::setAlpha(sf::Uint8 alpha) {
     sf::Color restartTextColor = restartText.getFillColor();
     restartTextColor.a = alpha;
     restartText.setFillColor(restartTextColor);
+
+    sf::Color survivalTextColor = survivalText.getFillColor(); 
+    survivalTextColor.a = alpha; 
+    survivalText.setFillColor(survivalTextColor);
 }
 
  void GameOver::fadeIn() {

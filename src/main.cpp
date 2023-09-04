@@ -39,7 +39,6 @@ Star generateStarForScreen(const sf::Vector2f& rocketPosition) {
 }
 
 
-
 sf::Vector2f getRandomOffscreenPosition(const sf::Vector2f& rocketPos) {
     float angle;
     float distance;
@@ -47,19 +46,32 @@ sf::Vector2f getRandomOffscreenPosition(const sf::Vector2f& rocketPos) {
 
     float actualDistance;
 
+    // Adjusted values
+    const float MIN_SAFE_DISTANCE = 200.0f; // Increased minimum distance
+    const float MAX_DISTANCE = 300.0f;
+
+    const float RECT_WIDTH = 150.0f;
+    const float RECT_HEIGHT = 150.0f;
+
     do {
         angle = (rand() % 360) * (3.14159265 / 180);
-        distance = 120 + (rand() % 181);  // This ensures distance is between 120 to 300
+        distance = MIN_SAFE_DISTANCE + (rand() % (int)(MAX_DISTANCE - MIN_SAFE_DISTANCE + 1)); // Ensures distance is between the new min and max
 
         newPos.x = rocketPos.x + distance * cos(angle);
         newPos.y = rocketPos.y + distance * sin(angle);
 
         actualDistance = std::sqrt(std::pow(newPos.x - rocketPos.x, 2) + std::pow(newPos.y - rocketPos.y, 2));
 
-    } while (actualDistance < 120.0f || actualDistance > 300.0f);  // Check if the position is at least 75 pixels away and less than 300 pixels away
+    } while (
+        actualDistance < MIN_SAFE_DISTANCE || 
+        actualDistance > MAX_DISTANCE || 
+        (newPos.x > rocketPos.x - RECT_WIDTH/2 && newPos.x < rocketPos.x + RECT_WIDTH/2 &&
+         newPos.y > rocketPos.y - RECT_HEIGHT/2 && newPos.y < rocketPos.y + RECT_HEIGHT/2)
+    ); // Added rectangular check 
 
     return newPos;
 }
+
 
 
 
@@ -141,7 +153,7 @@ int main() {
                     planets.clear(); 
                     PLANET_SPAWN_INTERVAL = 3.0f;
                     gameplayDuration = 0.0f; 
-                    gameTimer.reset(); 
+                    gameTimer.reset();
             }
         }
 
@@ -305,17 +317,22 @@ int main() {
                 currentState = GameOverState;
                 triggerGameOver = false;
             }
+        }
 
-        } else if (currentState == GameOverState) {
+        window.setView(defaultView);
+        if (currentState == PlayingState) {   // Draw the timer only in the playing state
+            gameTimer.draw(window);
+        }
+
+        if (currentState == GameOverState) {
             camera.setCenter(256, 256);
             window.setView(camera);
             window.clear();
+            gameOverScreen.setSurvivalTime(gameplayDuration);
             gameOverScreen.fadeIn();
             gameOverScreen.draw(window);
         }
 
-        window.setView(defaultView);
-        gameTimer.draw(window);
         window.setView(camera);
         window.display();
     }
