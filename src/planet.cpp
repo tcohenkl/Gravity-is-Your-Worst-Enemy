@@ -1,6 +1,9 @@
 #include "planet.hpp"
 #include <iostream>
 #include <cmath>
+#include <cstdlib>  // rand() function
+// #include <ctime>    // time() function
+
 
 Planet::Planet():
 rotationSpeed(0.002) 
@@ -10,11 +13,19 @@ rotationSpeed(0.002)
     } else {
         sprite.setTexture(texture);
         sprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);
-        sprite.setScale({0.5,0.5});
+
+        // Randomize sprite scale
+        float randomScale = 0.3f + static_cast<float>(rand()) / RAND_MAX * 0.5f;
+        sprite.setScale({randomScale, randomScale});
+
+        // Apply random color filter to the sprite
+        sprite.setColor(sf::Color(rand() % 256, rand() % 256, rand() % 256));
 
         collisionSprite.setTexture(texture);
         collisionSprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);
-        collisionSprite.setScale({0.47,0.47}); // 10% smaller than the original for collision testing
+
+        // Set collision sprite scale to be 94% of the main sprite's scale
+        collisionSprite.setScale({randomScale * 0.94f, randomScale * 0.94f}); // collision testing
 
         // Setting up the gravity field
         gravityField.setRadius(texture.getSize().x / 2 * 1.1); // Assuming the gravity field has 1.5 times the radius of the planet
@@ -72,7 +83,6 @@ sf::Vector2f Planet::getPosition() const {
 float Planet::getRotationSpeed() const {
     return rotationSpeed;
 }
-
 
 
 

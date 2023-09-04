@@ -13,6 +13,7 @@ public:
     sf::Vector2f computeGravityForce(const sf::Vector2f& position) const;
     sf::Vector2f getPosition() const;
     float getRotationSpeed() const;
+    void setTexture(const sf::Texture& newTexture);
 
 private:
     sf::Sprite sprite;
