@@ -48,7 +48,7 @@ public:
     void land();
     void takeOff();
     bool isLanded() const;
-    bool collidesWithAsteroid(const sf::Sprite& asteroidSprite);
+    void reset(); 
 
 private:
     sf::Texture texture;          // rocket texture w/o thrust

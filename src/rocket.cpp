@@ -34,7 +34,7 @@ CollisionDetail Rocket::checkCollision(const sf::Sprite& planetSprite) {
         float angleBetween = acos(dotProduct / (noseMagnitude * directionMagnitude)) * (180.0f / M_PI);
 
         // Threshold can be adjusted based on how strict you want the check to be
-        float thresholdAngle = 168.0f;  // this means if the angle is less than 168 degrees, it's a fatal collision (12 deg)
+        float thresholdAngle = 170.0f;  // this means if the angle is less than 168 degrees, it's a fatal collision (12 deg)
         if (angleBetween < thresholdAngle) {
             detail.isFatalCollision = true;
             std::cout << "Crash due to improper landing." << std::endl;
@@ -48,8 +48,8 @@ CollisionDetail Rocket::checkCollision(const sf::Sprite& planetSprite) {
 
 Rocket::Rocket() : 
 rotationSpeed(0.14f), 
-acceleration(0.00002f), 
-maxVelocity(0.30f), // originally 0.20
+acceleration(0.00001f), 
+maxVelocity(0.15f), // originally 0.20
 isThrusting(false),
 canRotate(true), 
 landed(false)
@@ -164,6 +164,14 @@ void Rocket::takeOff() {
 
 bool Rocket::isLanded() const {
     return landed;
+}
+
+void Rocket::reset() {
+    setPosition({256, 256}); 
+    setVelocity({0, 0});
+    setRotation(0);  // Assuming 0 degrees is the default rotation. Adjust if necessary.
+    landed = false;
+    enableRotation(); 
 }
 
 

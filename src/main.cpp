@@ -47,7 +47,7 @@ sf::Vector2f getRandomOffscreenPosition(const sf::Vector2f& rocketPos) {
     float actualDistance;
 
     // Adjusted values
-    const float MIN_SAFE_DISTANCE = 200.0f; // Increased minimum distance
+    const float MIN_SAFE_DISTANCE = 100.0f; // Increased minimum distance
     const float MAX_DISTANCE = 300.0f;
 
     const float RECT_WIDTH = 150.0f;
@@ -71,8 +71,6 @@ sf::Vector2f getRandomOffscreenPosition(const sf::Vector2f& rocketPos) {
 
     return newPos;
 }
-
-
 
 
 enum GameState {
@@ -154,9 +152,7 @@ int main() {
             if (currentState == GameOverState && evnt.type == sf::Event::KeyPressed && 
                 evnt.key.code == sf::Keyboard::R) {
                     currentState = PlayingState;
-                    rocket.setPosition({256, 256});
-                    rocket.setVelocity({0,0});
-                    rocket.takeOff();
+                    rocket.reset();
                     planets.clear(); 
                     PLANET_SPAWN_INTERVAL = 3.0f;
                     gameplayDuration = 0.0f; 
@@ -210,7 +206,7 @@ int main() {
 
                 if (gameplayDuration >= DURATION_BEFORE_SPAWN_INTERVAL_REDUCTION) {
                     PLANET_SPAWN_INTERVAL = std::max(PLANET_SPAWN_INTERVAL - 1.0f, MIN_PLANET_SPAWN_INTERVAL); // Reduce the spawn interval by 1
-                    gameplayDuration -= DURATION_BEFORE_SPAWN_INTERVAL_REDUCTION; // Reset the gameplay duration timer for the next reduction
+                    std::cout << "Planets now spawn every : " << PLANET_SPAWN_INTERVAL << "seconds" << std::endl; 
                 }
             }
 

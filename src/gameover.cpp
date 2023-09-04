@@ -35,7 +35,6 @@ void GameOver::setSurvivalTime(float seconds) {
 }
 
 
-
 void GameOver::draw(sf::RenderWindow& window) {
     window.draw(gameOverText);
     window.draw(restartText);
