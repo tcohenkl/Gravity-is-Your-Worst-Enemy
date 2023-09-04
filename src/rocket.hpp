@@ -48,7 +48,7 @@ public:
     void land();
     void takeOff();
     bool isLanded() const;
-    void reset(); 
+    void reset();  
 
 private:
     sf::Texture texture;          // rocket texture w/o thrust

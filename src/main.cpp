@@ -2,6 +2,7 @@
 #include "planet.hpp"
 #include "gameover.hpp"
 #include "timer.hpp"
+#include "distancemeter.hpp"
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <cstdlib>
@@ -47,7 +48,7 @@ sf::Vector2f getRandomOffscreenPosition(const sf::Vector2f& rocketPos) {
     float actualDistance;
 
     // Adjusted values
-    const float MIN_SAFE_DISTANCE = 100.0f; // Increased minimum distance
+    const float MIN_SAFE_DISTANCE = 200.0f; // Increased minimum distance
     const float MAX_DISTANCE = 300.0f;
 
     const float RECT_WIDTH = 150.0f;
@@ -71,6 +72,8 @@ sf::Vector2f getRandomOffscreenPosition(const sf::Vector2f& rocketPos) {
 
     return newPos;
 }
+
+
 
 
 enum GameState {
@@ -135,6 +138,11 @@ int main() {
     Timer gameTimer; 
     bool isTimerStarted = false; 
 
+    // Distance Meter Initialization
+    DistanceMeter distanceMeter;
+    distanceMeter.reset(rocket.getPosition());
+
+
 
     while (window.isOpen()) {
 
@@ -152,7 +160,8 @@ int main() {
             if (currentState == GameOverState && evnt.type == sf::Event::KeyPressed && 
                 evnt.key.code == sf::Keyboard::R) {
                     currentState = PlayingState;
-                    rocket.reset();
+                    rocket.reset(); 
+                    distanceMeter.reset(rocket.getPosition());
                     planets.clear(); 
                     PLANET_SPAWN_INTERVAL = 3.0f;
                     gameplayDuration = 0.0f; 
@@ -174,6 +183,7 @@ int main() {
             }
             rocket.handleInput();
             rocket.update();
+            distanceMeter.update(rocket.getPosition());
            
 
             planetSpawnTimer += deltaTime; // Increment the timer
@@ -206,7 +216,7 @@ int main() {
 
                 if (gameplayDuration >= DURATION_BEFORE_SPAWN_INTERVAL_REDUCTION) {
                     PLANET_SPAWN_INTERVAL = std::max(PLANET_SPAWN_INTERVAL - 1.0f, MIN_PLANET_SPAWN_INTERVAL); // Reduce the spawn interval by 1
-                    std::cout << "Planets now spawn every : " << PLANET_SPAWN_INTERVAL << "seconds" << std::endl; 
+                    gameplayDuration -= DURATION_BEFORE_SPAWN_INTERVAL_REDUCTION; // Reset the gameplay duration timer for the next reduction
                 }
             }
 
@@ -329,12 +339,14 @@ int main() {
         window.setView(defaultView);
         if (currentState == PlayingState) {   // Draw the timer only in the playing state
             gameTimer.draw(window);
+            distanceMeter.draw(window);
         }
 
         if (currentState == GameOverState) {
             camera.setCenter(256, 256);
             window.setView(camera);
             window.clear();
+            gameOverScreen.setDistance(distanceMeter.getTotalDistance()); 
             gameOverScreen.setSurvivalTime(gameplayDuration);
             gameOverScreen.fadeIn();
             gameOverScreen.draw(window);

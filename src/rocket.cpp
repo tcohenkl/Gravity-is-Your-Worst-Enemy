@@ -48,7 +48,7 @@ CollisionDetail Rocket::checkCollision(const sf::Sprite& planetSprite) {
 
 Rocket::Rocket() : 
 rotationSpeed(0.14f), 
-acceleration(0.00001f), 
+acceleration(0.000015f), 
 maxVelocity(0.15f), // originally 0.20
 isThrusting(false),
 canRotate(true), 
@@ -170,7 +170,7 @@ void Rocket::reset() {
     setPosition({256, 256}); 
     setVelocity({0, 0});
     setRotation(0);  // Assuming 0 degrees is the default rotation. Adjust if necessary.
-    landed = false;
+    landed = false; 
     enableRotation(); 
 }
 

@@ -13,7 +13,7 @@ GameOver::GameOver() :
     gameOverText.setString("GAME OVER");
     gameOverText.setCharacterSize(48);
     gameOverText.setFillColor(sf::Color::White);
-    gameOverText.setPosition(90, 200); 
+    gameOverText.setPosition(90, 220); 
     
     restartText.setFont(font);
     restartText.setString("Press 'R' to Restart");
@@ -25,6 +25,11 @@ GameOver::GameOver() :
     survivalText.setCharacterSize(18);
     survivalText.setFillColor(sf::Color::White);
     survivalText.setPosition(115, 140); 
+
+    distanceText.setFont(font);
+    distanceText.setCharacterSize(16);
+    distanceText.setFillColor(sf::Color(255,232,31));
+    distanceText.setPosition(160, 182); 
 }
 
 void GameOver::setSurvivalTime(float seconds) {
@@ -34,11 +39,20 @@ void GameOver::setSurvivalTime(float seconds) {
     survivalText.setString(ss.str());
 }
 
+void GameOver::setDistance(float distance){
+     std::stringstream ss;
+    ss << std::fixed << std::setprecision(1); // This sets the decimal precision to 2 places.
+    ss << "You Travelled: " << distance << " km";
+    distanceText.setString(ss.str());
+}
+
+
 
 void GameOver::draw(sf::RenderWindow& window) {
     window.draw(gameOverText);
     window.draw(restartText);
     window.draw(survivalText); 
+    window.draw(distanceText);
 }
 
 void GameOver::setAlpha(sf::Uint8 alpha) {
@@ -53,6 +67,10 @@ void GameOver::setAlpha(sf::Uint8 alpha) {
     sf::Color survivalTextColor = survivalText.getFillColor(); 
     survivalTextColor.a = alpha; 
     survivalText.setFillColor(survivalTextColor);
+
+    sf::Color distanceTextColor = distanceText.getFillColor(); 
+    distanceTextColor.a = alpha; 
+    distanceText.setFillColor(distanceTextColor);
 }
 
  void GameOver::fadeIn() {
