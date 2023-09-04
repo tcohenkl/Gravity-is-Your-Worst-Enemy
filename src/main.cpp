@@ -133,8 +133,10 @@ int main() {
     const float DURATION_BEFORE_SPAWN_INTERVAL_REDUCTION = 30.0f; // 30 seconds before reducing the spawn interval
 
 
-    // Timer initiation
+    // Timer initialization
     Timer gameTimer; 
+    bool isTimerStarted = false; 
+
 
     while (window.isOpen()) {
 
@@ -143,6 +145,11 @@ int main() {
         while (window.pollEvent(evnt)) {
             if (evnt.type == sf::Event::Closed)
                 window.close();
+            
+            if (currentState == PlayingState && evnt.type == sf::Event::KeyPressed && evnt.key.code == sf::Keyboard::W) {
+                isTimerStarted = true;
+                gameTimer.show();
+            }
 
             if (currentState == GameOverState && evnt.type == sf::Event::KeyPressed && 
                 evnt.key.code == sf::Keyboard::R) {
@@ -154,6 +161,8 @@ int main() {
                     PLANET_SPAWN_INTERVAL = 3.0f;
                     gameplayDuration = 0.0f; 
                     gameTimer.reset();
+                    gameTimer.hide();
+                    isTimerStarted = false; 
             }
         }
 
@@ -163,8 +172,10 @@ int main() {
 
 
         if (currentState == PlayingState) {
-            gameTimer.update(deltaTime);
-            gameplayDuration += deltaTime;
+            if (isTimerStarted) {
+                gameTimer.update(deltaTime);
+                gameplayDuration += deltaTime;
+            }
             rocket.handleInput();
             rocket.update();
            

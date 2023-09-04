@@ -2,7 +2,8 @@
 
 
     Timer::Timer()
-        : gameplayDuration(0.0f)
+        : gameplayDuration(0.0f),
+          displayTimer(false)
     {
         if (!font.loadFromFile("assets/fonts/Orbitron-Bold.ttf")) {
             std::cerr << "Failed to load font" << std::endl;
@@ -33,6 +34,13 @@
         timerText.setPosition(sf::Vector2f(256, 10)); // Assuming a window width of 800, adjust as per your needs
     }
 
+
     void Timer::draw(sf::RenderWindow& window) {
-        window.draw(timerText);
+        if(displayTimer) {
+            window.draw(timerText);
+        }
     }
+
+    void Timer::show() { displayTimer = true; }
+    void Timer::hide() { displayTimer = false; }
+

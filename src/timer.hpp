@@ -17,8 +17,12 @@ public:
     // Draws the timer to the window
     void draw(sf::RenderWindow& window);
 
+    void show(); 
+    void hide(); 
+
 private:
     float gameplayDuration; // in seconds
     sf::Font font;
     sf::Text timerText;
+    bool displayTimer;
 };
