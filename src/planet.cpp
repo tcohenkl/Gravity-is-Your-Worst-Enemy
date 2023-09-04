@@ -24,8 +24,8 @@ rotationSpeed(0.002)
         collisionSprite.setTexture(texture);
         collisionSprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);
 
-        // Set collision sprite scale to be 94% of the main sprite's scale
-        collisionSprite.setScale({randomScale * 0.94f, randomScale * 0.94f}); // collision testing
+        // Set collision sprite scale to be 96% of the main sprite's scale
+        collisionSprite.setScale({randomScale * 0.96f, randomScale * 0.96f}); // collision testing
 
         // Setting up the gravity field
         gravityField.setRadius(texture.getSize().x / 2 * 1.1); // Assuming the gravity field has 1.5 times the radius of the planet

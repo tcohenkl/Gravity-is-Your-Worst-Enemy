@@ -1,6 +1,7 @@
 #include "rocket.hpp"
 #include "planet.hpp"
 #include "gameover.hpp"
+#include "timer.hpp"
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <cstdlib>
@@ -37,16 +38,30 @@ Star generateStarForScreen(const sf::Vector2f& rocketPosition) {
     return star;
 }
 
-sf::Vector2f getRandomOffscreenPosition(const sf::Vector2f& rocketPos) {
-    float angle = (rand() % 360) * (3.14159265 / 180);
-    float distance = 100 + (rand() % 300);
 
+
+sf::Vector2f getRandomOffscreenPosition(const sf::Vector2f& rocketPos) {
+    float angle;
+    float distance;
     sf::Vector2f newPos;
-    newPos.x = rocketPos.x + distance * cos(angle);
-    newPos.y = rocketPos.y + distance * sin(angle);
+
+    float actualDistance;
+
+    do {
+        angle = (rand() % 360) * (3.14159265 / 180);
+        distance = 120 + (rand() % 181);  // This ensures distance is between 120 to 300
+
+        newPos.x = rocketPos.x + distance * cos(angle);
+        newPos.y = rocketPos.y + distance * sin(angle);
+
+        actualDistance = std::sqrt(std::pow(newPos.x - rocketPos.x, 2) + std::pow(newPos.y - rocketPos.y, 2));
+
+    } while (actualDistance < 120.0f || actualDistance > 300.0f);  // Check if the position is at least 75 pixels away and less than 300 pixels away
 
     return newPos;
 }
+
+
 
 enum GameState {
     PlayingState,   
@@ -58,10 +73,11 @@ enum GameState {
 int main() {
     // Random Seed 
      srand(static_cast<unsigned int>(time(nullptr)));
-    
-    
+
     // Initialize window and game state
     sf::RenderWindow window(sf::VideoMode(512, 512), "Rocket Game", sf::Style::Titlebar | sf::Style::Close);
+    sf::View defaultView = window.getDefaultView();
+
     GameState currentState = PlayingState;
     
     Rocket rocket;
@@ -93,10 +109,20 @@ int main() {
     bool isExploding = false;
     int currentExplosionFrame = 0;
     bool triggerGameOver = false;
+ 
 
-
+    // Planet Spawning/Generation
     std::vector<std::shared_ptr<Planet>> planets;
+    float planetSpawnTimer = 0.0f; // Initialize a timer
+    const float PLANET_DELETION_DISTANCE = 450.0f; // If planet is 450 pixels away delete
+    float PLANET_SPAWN_INTERVAL = 3.0f; // Spawn a planet every 3 seconds
+    const float MIN_PLANET_SPAWN_INTERVAL = 1.0f; // Minimum spawn (Every 1 second)
+    float gameplayDuration = 0.0f; // This timer will keep counting as long as the game is being played
+    const float DURATION_BEFORE_SPAWN_INTERVAL_REDUCTION = 30.0f; // 30 seconds before reducing the spawn interval
 
+
+    // Timer initiation
+    Timer gameTimer; 
 
     while (window.isOpen()) {
 
@@ -112,6 +138,10 @@ int main() {
                     rocket.setPosition({256, 256});
                     rocket.setVelocity({0,0});
                     rocket.takeOff();
+                    planets.clear(); 
+                    PLANET_SPAWN_INTERVAL = 3.0f;
+                    gameplayDuration = 0.0f; 
+                    gameTimer.reset(); 
             }
         }
 
@@ -121,16 +151,44 @@ int main() {
 
 
         if (currentState == PlayingState) {
+            gameTimer.update(deltaTime);
+            gameplayDuration += deltaTime;
             rocket.handleInput();
             rocket.update();
-           //  planet.update();
+           
 
-            if (rand() % 10000 == 0 & planets.size() < 10) {
-                auto newPlanet = std::make_shared<Planet>();
-                sf::Vector2f pos = getRandomOffscreenPosition(rocket.getPosition());
-                std::cout << "Spawning planet at: (" << pos.x << ", " << pos.y << ")" << std::endl;
-                newPlanet->setPosition(pos);
-                planets.push_back(newPlanet);
+            planetSpawnTimer += deltaTime; // Increment the timer
+
+            if (planetSpawnTimer >= PLANET_SPAWN_INTERVAL && planets.size() < 10) {
+                sf::Vector2f pos;
+                bool validPosition;
+                int maxAttempts = 5;
+                
+                do {
+                    pos = getRandomOffscreenPosition(rocket.getPosition());
+                    validPosition = true;
+                    // Ensure this position isn't too close to any existing planet
+                    for (const auto& planetPtr : planets) {
+                        float dist = std::sqrt(std::pow(planetPtr->getPosition().x - pos.x, 2) + std::pow(planetPtr->getPosition().y - pos.y, 2));
+                        if (dist < planetPtr->getCollisionSprite().getGlobalBounds().width) {
+                            validPosition = false;
+                            break;
+                        }
+                    }
+                    maxAttempts--;
+                } while (!validPosition && maxAttempts > 0);
+
+                if (validPosition) {
+                    auto newPlanet = std::make_shared<Planet>();
+                    newPlanet->setPosition(pos);
+                    planets.push_back(newPlanet);
+                    planetSpawnTimer = 0; // Reset the timer
+                }
+
+                if (gameplayDuration >= DURATION_BEFORE_SPAWN_INTERVAL_REDUCTION) {
+                    PLANET_SPAWN_INTERVAL = std::max(PLANET_SPAWN_INTERVAL - 1.0f, MIN_PLANET_SPAWN_INTERVAL); // Reduce the spawn interval by 1
+                    gameplayDuration -= DURATION_BEFORE_SPAWN_INTERVAL_REDUCTION; // Reset the gameplay duration timer for the next reduction
+                }
             }
 
             for (const auto& planetPtr : planets) {
@@ -149,8 +207,8 @@ int main() {
                 if (collisionDetail.hasCollided && !isExploding) {
                     if (collisionDetail.isFatalCollision) {
                         // Handle fatal collision: 
-                        // - Stop the rocket.
-                        // - Initiate the explosion sequence.
+                        // * Stop the rocket.
+                        // * Initiate explosion sequence.
                         rocket.setVelocity({0,0});
                         isExploding = true;
                         explosionSprite.setTexture(explosionTextures[currentExplosionFrame]);
@@ -184,7 +242,18 @@ int main() {
                     float rocketAngle = atan2(newDiff.y, newDiff.x) * (180 / 3.14159265); // Convert radians to degrees.
                     rocket.setRotation(rocketAngle + 90); // +90 because rocket's initial orientation is assumed to be up.
                 }
-            }       
+            }
+
+            for (auto it = planets.begin(); it != planets.end(); ) {
+                sf::Vector2f diff = rocket.getPosition() - (*it)->getPosition();
+                float distance = std::sqrt(diff.x * diff.x + diff.y * diff.y);
+                if (distance > PLANET_DELETION_DISTANCE) {
+                    it = planets.erase(it); // Erase returns the next valid iterator
+                } else {
+                    ++it;
+                }
+            }
+       
 
             for (int i = 0; i < NUM_STARS; ++i) {
                 stars[i].position -= rocket.getVelocity();
@@ -245,6 +314,9 @@ int main() {
             gameOverScreen.draw(window);
         }
 
+        window.setView(defaultView);
+        gameTimer.draw(window);
+        window.setView(camera);
         window.display();
     }
 }
