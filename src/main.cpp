@@ -90,6 +90,7 @@ int main() {
     // Initialize window and game state
     sf::RenderWindow window(sf::VideoMode(512, 512), "Rocket Game", sf::Style::Titlebar | sf::Style::Close);
     sf::View defaultView = window.getDefaultView();
+    float gameplayDurationInterval = 0.0f; 
 
     GameState currentState = PlayingState;
     
@@ -214,9 +215,10 @@ int main() {
                     planetSpawnTimer = 0; // Reset the timer
                 }
 
-                if (gameplayDuration >= DURATION_BEFORE_SPAWN_INTERVAL_REDUCTION) {
+                    gameplayDurationInterval = gameplayDuration; 
+                if (gameplayDurationInterval >= DURATION_BEFORE_SPAWN_INTERVAL_REDUCTION) {
                     PLANET_SPAWN_INTERVAL = std::max(PLANET_SPAWN_INTERVAL - 1.0f, MIN_PLANET_SPAWN_INTERVAL); // Reduce the spawn interval by 1
-                    gameplayDuration -= DURATION_BEFORE_SPAWN_INTERVAL_REDUCTION; // Reset the gameplay duration timer for the next reduction
+                    gameplayDurationInterval = DURATION_BEFORE_SPAWN_INTERVAL_REDUCTION; // Reset the gameplay duration timer for the next reduction
                 }
             }
 

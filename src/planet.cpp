@@ -1,53 +1,51 @@
 #include "planet.hpp"
 #include <iostream>
 #include <cmath>
-#include <cstdlib>  // rand() function
-// #include <ctime>    // time() function
-
+#include <cstdlib>  
 
 Planet::Planet():
 rotationSpeed(0.002) 
 {
+    // Load the planet texture
     if (!texture.loadFromFile("assets/sprites/planet.png")) {
         std::cerr << "Failed to load planet texture." << std::endl;
     } else {
+        // Set texture and origin for sprite
         sprite.setTexture(texture);
         sprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);
 
-        // Randomize sprite scale
+        // Randomize sprite scale and color
         float randomScale = 0.3f + static_cast<float>(rand()) / RAND_MAX * 0.5f;
         sprite.setScale({randomScale, randomScale});
-
-        // Apply random color filter to the sprite
         sprite.setColor(sf::Color(rand() % 256, rand() % 256, rand() % 256));
 
+        // Set texture, origin, and scale for collision sprite
         collisionSprite.setTexture(texture);
         collisionSprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);
+        collisionSprite.setScale({randomScale * 0.98f, randomScale * 0.98f}); 
 
-        // Set collision sprite scale to be 98% of the main sprite's scale
-        collisionSprite.setScale({randomScale * 0.98f, randomScale * 0.98f}); // collision testing
-
-        // Setting up the gravity field
-        gravityField.setRadius(texture.getSize().x / 2 * 1.1); // Assuming the gravity field has 1.5 times the radius of the planet
-        gravityField.setOrigin(gravityField.getRadius(), gravityField.getRadius()); // Center the origin
-        gravityField.setFillColor(sf::Color(0, 0, 255, 50)); // A translucent blue color
+        // Configure the gravity field
+        gravityField.setRadius(texture.getSize().x / 2 * 1.1); 
+        gravityField.setOrigin(gravityField.getRadius(), gravityField.getRadius());
+        gravityField.setFillColor(sf::Color(0, 0, 255, 50)); 
     }
 }
 
 void Planet::setPosition(const sf::Vector2f& position) {
     sprite.setPosition(position);
     collisionSprite.setPosition(position);
-    gravityField.setPosition(position); // Set gravity field's position
+    gravityField.setPosition(position); 
 }
 
 void Planet::update() {
+    // Rotate planet, collision sprite, and gravity field
     sprite.rotate(rotationSpeed);
     collisionSprite.rotate(rotationSpeed);
     gravityField.rotate(rotationSpeed);
 }
 
 void Planet::draw(sf::RenderWindow& window) const {
-    window.draw(gravityField); // Draw the gravity field first, so it's below the planet sprite
+    window.draw(gravityField); 
     window.draw(sprite);
 }
 
@@ -66,9 +64,8 @@ sf::Vector2f Planet::computeGravityForce(const sf::Vector2f& position) const {
         return {0.0f, 0.0f};
     }
     
-    // Simple gravitational pull towards the center of the planet
-    // You can adjust the gravitational constant as per your needs
-    float gravitationalConstant = 0.000006f;
+    // Compute gravitational pull towards the center of the planet
+    const float gravitationalConstant = 0.000006f;
     sf::Vector2f direction = sprite.getPosition() - position;
     float magnitude = std::sqrt(direction.x * direction.x + direction.y * direction.y);
     direction /= magnitude; // Normalize direction
@@ -83,8 +80,3 @@ sf::Vector2f Planet::getPosition() const {
 float Planet::getRotationSpeed() const {
     return rotationSpeed;
 }
-
-
-
-
-
