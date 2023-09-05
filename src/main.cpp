@@ -10,6 +10,8 @@
 #include <iostream>
 #include <memory>
 
+const static float PI = 3.14159265f; 
+
 // Constants related to the stars in the game.
 const int NUM_STARS = 200; // Number of stars in the game.
 const float STAR_MAX_SIZE = 3.0f; // Maximum size for a star.
@@ -64,7 +66,7 @@ sf::Vector2f getRandomOffscreenPosition(const sf::Vector2f& rocketPos) {
     const float RECT_HEIGHT = 150.0f;       // Height of the rectangular exclusion zone around the rocket.
 
     do {
-        angle = (rand() % 360) * (3.14159265 / 180);  // Generate a random angle.
+        angle = (rand() % 360) * (PI / 180);  // Generate a random angle.
         distance = MIN_SAFE_DISTANCE + (rand() % (int)(MAX_DISTANCE - MIN_SAFE_DISTANCE + 1)); // Randomize distance within the safe range.
 
         // Calculate the new position based on angle and distance.
@@ -306,7 +308,7 @@ int main() {
                 // 4. Adjust rocket position and rotation if it has landed on this planet.
                 if (rocket.isLanded()) {
                     sf::Vector2f diff = rocket.getPosition() - planet.getPosition();
-                    float angleRad = planet.getRotationSpeed() * (3.14159265 / 180); // Convert rotation speed to radians.
+                    float angleRad = planet.getRotationSpeed() * (PI / 180); // Convert rotation speed to radians.
 
                     // Rotate the difference vector.
                     sf::Vector2f newDiff(
@@ -318,7 +320,7 @@ int main() {
                     rocket.setPosition(planet.getPosition() + newDiff);
 
                     // Compute rotation angle for the rocket.
-                    float rocketAngle = atan2(newDiff.y, newDiff.x) * (180 / 3.14159265); // Convert radians to degrees.
+                    float rocketAngle = atan2(newDiff.y, newDiff.x) * (180 / PI); // Convert radians to degrees.
                     rocket.setRotation(rocketAngle + 90); // +90 because rocket's initial orientation is assumed to be up.
                 }
             }
