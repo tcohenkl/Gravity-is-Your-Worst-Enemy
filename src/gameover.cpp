@@ -1,6 +1,6 @@
 #include "gameover.hpp"
 #include <iostream> 
-#include <iomanip>  // for std::setprecision
+#include <iomanip>
 
 GameOver::GameOver() :
     fadeAlpha(0.0)
@@ -34,14 +34,14 @@ GameOver::GameOver() :
 
 void GameOver::setSurvivalTime(float seconds) {
     std::stringstream ss;
-    ss << std::fixed << std::setprecision(2); // This sets the decimal precision to 2 places.
+    ss << std::fixed << std::setprecision(2); // sets the decimal precision to 2 places.
     ss << "You survived: " << seconds << " seconds";
     survivalText.setString(ss.str());
 }
 
 void GameOver::setDistance(float distance){
      std::stringstream ss;
-    ss << std::fixed << std::setprecision(1); // This sets the decimal precision to 2 places.
+    ss << std::fixed << std::setprecision(1); // sets the decimal precision to 2 places.
     ss << "You Travelled: " << distance << " km";
     distanceText.setString(ss.str());
 }
@@ -88,5 +88,5 @@ bool GameOver::checkForRestart(const sf::Event& event) {
 
 void GameOver::resetAlpha() {
     fadeAlpha = 0.0;
-    setAlpha(0); // set text alpha to fully transparent
+    setAlpha(0); // Set text alpha to fully transparent
 }

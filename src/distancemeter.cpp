@@ -6,7 +6,7 @@
 #include <sstream>
 
 
-DistanceMeter::DistanceMeter() : totalDistance(0.0f)
+DistanceMeter::DistanceMeter() : totalDistance(0.0f), displayMeter(false)
 {
     if (!font.loadFromFile("assets/fonts/Orbitron-Bold.ttf")) {
         std::cerr << "Failed to load font" << std::endl;
@@ -40,11 +40,11 @@ void DistanceMeter::update(const sf::Vector2f& currentPosition) {
     ss << "Distance: " << std::fixed << std::setprecision(1) << distanceInKm << " km";  // Display up to one decimal point
     distanceText.setString(ss.str());
 
-    // Position it below the timer
+    // Position below the timer
     distanceText.setPosition(sf::Vector2f(198, 40));
 }
 
-// Get the total distance traveled
+// Get total distance traveled
 float DistanceMeter::getTotalDistance() const {
     float distanceInKm = totalDistance / 1000.0f; // Convert meters to kilometers
     return std::round(distanceInKm * 10.0f) / 10.0f; // Round to one decimal point
@@ -52,6 +52,10 @@ float DistanceMeter::getTotalDistance() const {
 
 
 void DistanceMeter::draw(sf::RenderWindow& window) {
-    window.draw(distanceText);
+    if (displayMeter){
+        window.draw(distanceText);
+    }
 }
 
+void DistanceMeter::show() { displayMeter = true; }
+void DistanceMeter::hide() { displayMeter = false; }

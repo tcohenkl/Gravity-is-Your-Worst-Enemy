@@ -1,30 +1,51 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
+
 class Planet {
 public:
+    // Constructor initializes the planet's properties.
     Planet();
 
-    // Setters
+    // Sets the planet's position on the screen.
     void setPosition(const sf::Vector2f& position);
 
-    // Core functions
-    void update(); // Updates the state of the planet
-    void draw(sf::RenderWindow& window) const; // Draws the planet on the given window
+    // Updates the planet's state (like rotation).
+    void update();
 
-    // Getters
+    // Renders the planet to the provided render window.
+    void draw(sf::RenderWindow& window) const;
+
+    // Getter methods:
+    // Returns the sprite used for collision detection.
     const sf::Sprite& getCollisionSprite() const;
+    
+    // Gets the position of the planet.
     sf::Vector2f getPosition() const;
+
+    // Retrieves the rotation speed of the planet.
     float getRotationSpeed() const;
 
-    // Physics functions
-    bool isWithinGravityField(const sf::Vector2f& position) const;  // Checks if given position lies within planet's gravity field
-    sf::Vector2f computeGravityForce(const sf::Vector2f& position) const; // Computes the gravity force exerted by the planet on a position
+    // Physics methods:
+    // Checks if the provided position lies within the planet's gravity field.
+    bool isWithinGravityField(const sf::Vector2f& position) const;
+
+    // Computes the gravitational force exerted by the planet on a specific position.
+    sf::Vector2f computeGravityForce(const sf::Vector2f& position) const;
 
 private:
+    // Visual representation of the planet.
     sf::Sprite sprite;
-    sf::Texture texture; 
+
+    // Texture used for the planet's sprite.
+    sf::Texture texture;
+
+    // Sprite used specifically for collision detection.
     sf::Sprite collisionSprite;
-    sf::CircleShape gravityField; // Represents the translucent ring for gravity
-    const float rotationSpeed; 
+
+    // Visual representation of the planet's gravitational field.
+    sf::CircleShape gravityField;
+
+    // Speed at which the planet rotates.
+    const float rotationSpeed;
 };

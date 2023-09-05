@@ -2,8 +2,10 @@
 #include <SFML/Graphics.hpp>
 
 class DistanceMeter {
+
 private:
     float totalDistance;  // Store the total distance traveled
+    bool displayMeter; // Whether distance meter appears on screen or not 
     sf::Vector2f initialPosition;  // Store the initial starting position
     sf::Font font;
     sf::Text distanceText;
@@ -21,6 +23,12 @@ public:
     // Get the total distance traveled
     float getTotalDistance() const;
 
+   // Renders the distance meter to the provided render window.
     void draw(sf::RenderWindow& window);
+
+
+  //To display distance meter on the screen 
+    void show();
+    void hide();
 
 };
