@@ -1,7 +1,7 @@
 # Gravity is Your Worst Enemy
 
 ## Introduction
-_"Gravity is Your Worst Enemy"_ is an original lunar landing video game which was created in the span of a month. This project was conceived to familiarize myself with C++ and its vast range of libraries. I wanted to challenge myself to not only understand the intricacies of the language but to also manage and organize a large-scale project and use github. Throughout the development process, I found it very challenging to imitate the nuances of space physics, particularly the inertia and momentum of the rocket ship movement and the complexities of rocket landing on a rotating planet.
+_"Gravity is Your Worst Enemy"_ is an original lunar landing video game which was created in the span of a month. This project was conceived to familiarize myself with C++ and its vast range of libraries. I wanted to challenge myself to not only understand the intricacies of the language but to also manage and organize a large-scale project using github. Throughout the development process, I found it very challenging to imitate the nuances of space physics, particularly the inertia and momentum of the rocket ship movement and the complexities of rocket landing on a rotating planet. 
 
 <img width="466" alt="Screen Shot 2023-09-05 at 4 48 54 PM" src="./assets/readme/game.png">
 
