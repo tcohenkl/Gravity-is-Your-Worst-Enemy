@@ -1,70 +1,75 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-
-
-// Collision Structure with information about collision:
-// Includes: 
-//         * Whether the rocket has collided
-//         * The rocket passed the criteria for a fatal collision
-//         * Where the rocket collided with said object 
+// This structure provides details about a collision event.
+// hasCollided: Indicates if the rocket has collided with an object.
+// isFatalCollision: Indicates if the collision should be considered fatal (leading to a crash).
+// collisionPoint: Specifies the point where the rocket collided with the object.
 struct CollisionDetail {
     bool hasCollided;
     bool isFatalCollision;
     sf::Vector2f collisionPoint;
 };
 
-
-// Rocket Class (Controlled by player)
+// Rocket class represents the player-controlled rocket.
 class Rocket {
 public:
-    Rocket();
-   
-    // handleInput() Handles keyboard presses by the player to navigate the Rocket
+    Rocket();  // Constructor initializes the rocket properties.
+
+    // User input handling: navigation controls for the rocket.
     void handleInput();
 
-    // update() Moves the rocket sprite
+    // Updates the rocket's state based on current velocity.
     void update();
- 
-    // draw(window) Draws the rocket onto the window
+
+    // Renders the rocket to the provided render window.
     void draw(sf::RenderWindow &window);
 
-    // setPosition(pos) Sets the position of the rocket anywhere in the window
+    // Setters for rocket's position and velocity.
     void setPosition(const sf::Vector2f &pos);
-
-    // setVelocity(velocity) Changes the velocity of the rocket
     void setVelocity(const sf::Vector2f &velocity);
-   
-   // applyForce(force) Applies a force to the rocket
+
+    // Applies an external force to the rocket, changing its velocity.
     void applyForce(const sf::Vector2f& force);
-   
+
+    // Checks if the rocket has collided with the given planet sprite and returns collision details.
     CollisionDetail checkCollision(const sf::Sprite& planetSprite);
+    
+    // Getters for rocket's position, velocity, and forward direction.
     sf::Vector2f getPosition() const;
     sf::Vector2f getVelocity() const;
     sf::Vector2f getForwardDirection() const;
+
+    // Setters for rocket's rotation and methods to enable or disable rotation.
     void setRotation(float angle);
     void enableRotation();
     void disableRotation();
+
+    // Methods to simulate the rocket's landing and take-off behaviors.
     void land();
     void takeOff();
+
+    // Checks if the rocket has landed.
     bool isLanded() const;
+
+    // Resets the rocket to its initial state.
     void reset();  
 
 private:
-    sf::Texture texture;          // rocket texture w/o thrust
-    sf::Texture thrustTexture;    // rocket texture w thrust
-    sf::Sprite sprite;
+    sf::Texture texture;          // Rocket's base texture without thrust.
+    sf::Texture thrustTexture;    // Rocket's texture when thrust is applied.
+    sf::Sprite sprite;            // Sprite used for rendering the rocket.
     
+    const float rotationSpeed;    // Speed at which the rocket rotates.
+    const float acceleration;     // Acceleration value applied when thrusting.
+    const float maxVelocity;     // Maximum speed the rocket can achieve.
+    bool isThrusting;             // Flag indicating if thrust is currently applied.
+    sf::Vector2f velocity;        // Current velocity vector of the rocket.
 
-    const float rotationSpeed;
-    const float acceleration;
-    const float maxVelocity;
-    bool isThrusting;
-    sf::Vector2f velocity;
-
+    // Utility functions to calculate vector magnitude and normalize vectors.
     float magnitude(const sf::Vector2f& vec);
     sf::Vector2f normalize(const sf::Vector2f& vec);
 
-    bool canRotate;
-    bool landed; 
+    bool canRotate;               // Flag indicating if the rocket can rotate.
+    bool landed;                  // Flag indicating if the rocket has landed.
 };
