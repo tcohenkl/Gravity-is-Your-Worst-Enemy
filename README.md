@@ -41,6 +41,8 @@ _"Gravity is Your Worst Enemy"_ is an original lunar landing video game which wa
 
   <a href="./assets/readme/improper-landing.mov">Click here to view the "Improper Landing" video</a>
 
+  <img width="511" alt="Screen Shot 2023-09-05 at 4 50 39 PM" src="./assets/readme/explosion.png">
+
 
   _Gameover Screen:_
 
