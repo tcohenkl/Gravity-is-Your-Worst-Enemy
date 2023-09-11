@@ -30,7 +30,7 @@ _"Gravity is Your Worst Enemy"_ is an original lunar landing video game which wa
 
   <img width="284" alt="Screen Shot 2023-09-05 at 5 03 35 PM" src="./assets/readme/gravityfield.png">
 
-- **Landings**: Land with precision on a planet's thruster. Use the planet's rotation for strategic maneuvers. But remember, prolonged survival means faster planet spawn times...
+- **Landings**: Land with precision on a planet with your thruster. Use the planet's rotation for strategic maneuvers. But remember, prolonged survival means faster planet spawn times...
 
   <img width="288" alt="Screen Shot 2023-09-05 at 5 05 49 PM" src="./assets/readme/proper-landing.png">
 
